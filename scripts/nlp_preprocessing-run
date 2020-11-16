@@ -8,7 +8,7 @@ import pandas as pd
 
 # Import from nlp_preprocessing
 import nlp_preprocessing
-from nlp_preprocessing.lib import clean_data
+from nlp_preprocessing.lib import clean_text
 
 if __name__ == '__main__':
     usage = '%(prog)s'
@@ -18,10 +18,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=description, usage=usage)
     args = parser.parse_args()
     folder_source, _ = split(nlp_preprocessing.__file__)
-    df = pd.read_csv('{}/data/data.csv.gz'.format(folder_source))
-    print('  nlp_preprocessing/data/data.csv.gz Loaded')
+    df = pd.read_csv('{}/data/data'.format(folder_source), sep=",", header=None, names=['text'])
+    print('  nlp_preprocessing/data/data Loaded')
 
-    res = clean_data(df)
+    res = df.text.apply(clean_text)
     res.to_csv('out.csv', index=False)
     print('==> out.csv MADE ')
     print('    shape is {}'.format(res.shape))

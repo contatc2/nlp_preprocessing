@@ -3,55 +3,31 @@
 """ Main lib for nlp_preprocessing Project
 """
 
-from os.path import split
+# from os.path import split
+from nltk.corpus import stopwords
+import string
 import pandas as pd
-import datetime
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk import word_tokenize
 
-pd.set_option('display.width', 200)
-
-
-def clean_data(data):
-    """ clean data
+def clean_text (text):
+    """clean text for NLP models
     """
-    # Remove columns starts with vote
-    cols = [x for x in data.columns if x.find('vote') >= 0]
-    data.drop(cols, axis=1, inplace=True)
-    # Remove special characteres from columns
-    data.loc[:, 'civility'] = data['civility'].replace('\.', '', regex=True)
-    # Calculate Age from day of birth
-    actual_year = datetime.datetime.now().year
-    data.loc[:, 'Year_Month'] = pd.to_datetime(data.birthdate)
-    data.loc[:, 'Age'] = actual_year - data['Year_Month'].dt.year
-    # Uppercase variable to avoid duplicates
-    data.loc[:, 'city'] = data['city'].str.upper()
-    # Take 2 first digits, 2700 -> 02700 so first two are region
-    data.loc[:, 'postal_code'] = data.postal_code.str.zfill(5).str[0:2]
-    # Remove columns with more than 50% of nans
-    cnans = data.shape[0] / 2
-    data = data.dropna(thresh=cnans, axis=1)
-    # Remove rows with more than 50% of nans
-    rnans = data.shape[1] / 2
-    data = data.dropna(thresh=rnans, axis=0)
-    # Discretize based on quantiles
-    data.loc[:, 'duration'] = pd.qcut(data['surveyduration'], 10)
-    # Discretize based on values
-    data.loc[:, 'Age'] = pd.cut(data['Age'], 10)
-    # Rename columns
-    data.rename(columns={'q1': 'Frequency'}, inplace=True)
-    # Transform type of columns
-    data.loc[:, 'Frequency'] = data['Frequency'].astype(int)
-    # Rename values in rows
-    drows = {1: 'Manytimes', 2: 'Onetimebyday', 3: '5/6timesforweek',
-             4: '4timesforweek', 5: '1/3timesforweek', 6: '1timeformonth',
-             7: '1/trimestre', 8: 'Less', 9: 'Never'}
-    data.loc[:, 'Frequency'] = data['Frequency'].map(drows)
-    return data
-
+    for punctuation in string.punctuation:
+        text = text.replace(punctuation, ' ') # Remove Punctuation
+    lowercased = text.lower() # Lower Case
+    tokenized = word_tokenize(lowercased) # Tokenize
+    words_only = [word for word in tokenized if word.isalpha()] # Remove numbers
+    stop_words = set(stopwords.words('english')) # Make stopword list
+    without_stopwords = [word for word in words_only if not word in stop_words] # Remove Stop Words
+    lemma=WordNetLemmatizer() # Initiate Lemmatizer
+    lemmatized = [lemma.lemmatize(word) for word in without_stopwords] # Lemmatize
+    return lemmatized
 
 if __name__ == '__main__':
     # For introspections purpose to quickly get this functions on ipython
     import nlp_preprocessing
     folder_source, _ = split(nlp_preprocessing.__file__)
-    df = pd.read_csv('{}/data/data.csv.gz'.format(folder_source))
-    clean_data = clean_data(df)
-    print(' dataframe cleaned')
+    df = pd.read_csv('{}/data/data.csv'.format(folder_source), sep=",", header=None, names=['Text'])
+    clean_text = df.text.apply(clean_text)
+    print(' text cleaned')
