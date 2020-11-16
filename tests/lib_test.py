@@ -4,9 +4,9 @@
 import os
 import nlp_preprocessing
 import pandas as pd
+import pytest
 # Import from our lib
 from nlp_preprocessing.lib import clean_text
-import pytest
 
 
 def test_clean_text():

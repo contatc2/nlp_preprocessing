@@ -28,6 +28,6 @@ if __name__ == '__main__':
     # For introspections purpose to quickly get this functions on ipython
     import nlp_preprocessing
     folder_source, _ = split(nlp_preprocessing.__file__)
-    df = pd.read_csv('{}/data/data.csv'.format(folder_source), sep=",", header=None, names=['Text'])
+    df = pd.read_csv('{}/data/data'.format(folder_source), sep=",", header=None, names=['text'])
     clean_text = df.text.apply(clean_text)
     print(' text cleaned')
