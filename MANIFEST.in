@@ -1,0 +1,3 @@
+graft nlp_preprocessing
+global-exclude *.py[cod] __pycache__ *.so *.ipynb
+recursive-exclude  nlp_preprocessing/jupy *
