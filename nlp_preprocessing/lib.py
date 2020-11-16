@@ -9,6 +9,7 @@ import string
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk import word_tokenize
+import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
