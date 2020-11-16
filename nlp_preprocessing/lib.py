@@ -9,6 +9,9 @@ import string
 import pandas as pd
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk import word_tokenize
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
 
 def clean_text (text):
     """clean text for NLP models
